@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Environment variables
+.env
+*.env
+
+# Pytest cache
+.pytest_cache/
+
+# MyPy cache
+.mypy_cache/
+
+# VS Code settings
+.vscode/
+
+# macOS system files
+.DS_Store
+
+# Coverage reports
+htmlcov/
+.coverage
+
+# Logs
+*.log
+
+# SQLite or other local DB files
+*.sqlite3
+
+# Compiled C files
+*.so
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Uvicorn reload artifacts (optional)
+*.pid
+
+# FastAPI generated OpenAPI cache (optional)
+openapi.json
+
+# __pypackages__ (PEP 582)
+__pypackages__/
