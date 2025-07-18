@@ -13,14 +13,31 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
-class UserResponse(UserBase):
+# class UserResponse(UserBase):
+#     id: int
+#     created_at: datetime
+
+#     class Config:
+#         from_attributes = True
+
+class UserResponse(BaseModel):
     id: int
+    name: str
+    phonenumber: str
+    email: EmailStr
+    profileimage: str | None = None
+    address: str | None = None
     created_at: datetime
 
     class Config:
-        orm_mode = True
-
-
+        from_attributes = True
+        
+class UserUpdate(BaseModel):
+    name: Optional[str]
+    phonenumber: Optional[str]
+    email: Optional[EmailStr]
+    profileimage: Optional[str]
+    address: Optional[str]
 
 
 # ==== EXPENSE ====
@@ -42,7 +59,7 @@ class ExpenseResponse(ExpenseCreate):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 
@@ -59,7 +76,7 @@ class CategoryResponse(CategoryBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # === AUTH ===
 
@@ -82,7 +99,9 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-
+class ChangePasswordRequest(BaseModel):
+    old_password: str
+    new_password: str
 
 # ==== INCOME ====
 class IncomeBase(BaseModel):
@@ -98,7 +117,7 @@ class IncomeResponse(IncomeBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # ==== BILL REMINDER ====
 class BillReminderBase(BaseModel):
@@ -117,7 +136,7 @@ class BillReminderResponse(BillReminderBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # summary
 
@@ -127,4 +146,6 @@ class SummaryResponse(BaseModel):
     remaining_balance: float
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+

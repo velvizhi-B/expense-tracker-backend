@@ -28,6 +28,35 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(database.get_d
     db.refresh(new_user)
     return new_user
 
+@router.put("/update-profile", response_model=schemas.UserResponse)
+def update_profile(
+    updates: schemas.UserUpdate,
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    if updates.email:
+        # Check if email is already taken by someone else
+        email_user = db.query(models.User).filter(models.User.email == updates.email).first()
+        if email_user and email_user.id != current_user.id:
+            raise HTTPException(status_code=400, detail="Email already in use")
+
+    # Update fields only if values are provided
+    if updates.name is not None:
+        current_user.name = updates.name
+    if updates.phonenumber is not None:
+        current_user.phonenumber = updates.phonenumber
+    if updates.email is not None:
+        current_user.email = updates.email
+    if updates.profileimage is not None:
+        current_user.profileimage = updates.profileimage
+    if updates.address is not None:
+        current_user.address = updates.address
+
+    db.commit()
+    db.refresh(current_user)
+
+    return current_user
+
 
 @router.post("/login", response_model=schemas.Token)
 def login_user(login_data: schemas.LoginRequest, db: Session = Depends(database.get_db)):
@@ -38,6 +67,34 @@ def login_user(login_data: schemas.LoginRequest, db: Session = Depends(database.
     token = create_access_token(data={"email": user.email})
     return {"access_token": token, "token_type": "bearer"}
 
+@router.get("/user-name")
+def get_user_name(current_user: models.User = Depends(get_current_user)):
+    return {"name": current_user.name}
+
+@router.get("/profile", response_model=schemas.UserResponse)
+def get_user_profile(
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    return current_user
+
+
+@router.post("/change-password")
+def change_password(
+    payload: schemas.ChangePasswordRequest,
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    # Step 1: Verify old password
+    if not verify_password(payload.old_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Incorrect old password")
+
+    # Step 2: Hash and update new password
+    new_hashed_pw = hash_password(payload.new_password)
+    current_user.password_hash = new_hashed_pw
+    db.commit()
+
+    return {"message": "Password updated successfully"}
 
 
 @router.post("/logout", status_code=status.HTTP_200_OK)
@@ -46,3 +103,13 @@ def logout(current_user: models.User = Depends(get_current_user)):
     Dummy logout endpoint. Simply instruct client to delete JWT token.
     """
     return {"message": "Logout successful. Please delete the token on the client side."}
+
+@router.delete("/delete-account")
+def delete_account(
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    # Delete user record
+    db.delete(current_user)
+    db.commit()
+    return {"message": "Your account has been deleted successfully"}
