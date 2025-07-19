@@ -9,7 +9,8 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # React dev server
+    allow_origins=["https://etvel.netlify.app"],  # React dev server
+    # allow_origins=["*"],  # Local React dev server
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
